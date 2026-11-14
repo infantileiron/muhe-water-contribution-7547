@@ -1,5 +1,6 @@
 from .user import User
 from .dataset import ConsumptionDataset
+from .meter import MeterBatch, MeterObservationSet
 from .comparison import PeriodComparison
 from .run import DecompositionRun
 from .review import DriverReview

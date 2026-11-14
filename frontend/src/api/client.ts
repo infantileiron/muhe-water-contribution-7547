@@ -1,7 +1,11 @@
 export async function request<T>(path:string,options:RequestInit={}):Promise<T>{
  const token=localStorage.getItem('mix-token');
  const response=await fetch('/api'+path,{...options,headers:{'Content-Type':'application/json',...(token?{'Authorization':'Bearer '+token}:{}),...options.headers}});
- if(!response.ok){let detail='请求失败';try{const data=await response.json();detail=typeof data.detail==='string'?data.detail:JSON.stringify(data.detail)}catch{};throw new Error(detail)}
+ if(!response.ok){let detail:unknown='请求失败';try{detail=(await response.json()).detail}catch{};
+  const message=typeof detail==='string'?detail:JSON.stringify(detail);
+  const error=new Error(message) as Error&{detail?:unknown};
+  if(typeof detail==='object'&&detail!==null)error.detail=detail;
+  throw error}
  return response.json();
 }
 export const post=<T>(path:string,data:unknown)=>request<T>(path,{method:'POST',body:JSON.stringify(data)});
